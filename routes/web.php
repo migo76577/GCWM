@@ -68,6 +68,29 @@ Route::middleware('auth')->group(function () {
     Route::get('/drivers', function () {
         return Inertia::render('Drivers/Index');
     })->name('drivers.index');
+    Route::get('/drivers/{driver}', function ($driverId) {
+        // You'll need to create a DriverController method for this
+        // For now, returning mock data structure
+        $driver = (object) [
+            'id' => $driverId,
+            'employee_number' => 'EMP001',
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'phone' => '+254712345678',
+            'license_number' => 'DL123456',
+            'license_expiry' => '2025-12-31',
+            'hire_date' => '2024-01-01',
+            'address' => '123 Main Street, Nairobi',
+            'status' => 'active',
+            'user' => (object) [
+                'email' => 'john.doe@company.com'
+            ]
+        ];
+        
+        return Inertia::render('Drivers/Show', [
+            'driver' => $driver
+        ]);
+    })->name('drivers.show');
 });
 
 require __DIR__.'/auth.php';

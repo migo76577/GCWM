@@ -4,7 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { toast, Toaster } from 'sonner';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createCustomerSchema } from '@/schemas/customerSchema';
+import { createCustomerSchema, updateCustomerSchema } from '@/schemas/customerSchema';
 import { useAuthStore, useCustomerStore, useRouteStore } from '@/stores';
 import { Button } from "@/components/ui/button";
 import {
@@ -46,6 +46,7 @@ const toProperCase = (str) => {
 
 export default function Index({ auth, api_token, categories = [] }) {
     const [open, setOpen] = useState(false);
+    const [editingCustomer, setEditingCustomer] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState(null);
 
     // Zustand stores
@@ -72,7 +73,7 @@ export default function Index({ auth, api_token, categories = [] }) {
         control,
         formState: { errors, isSubmitting }
     } = useForm({
-        resolver: zodResolver(createCustomerSchema),
+        resolver: zodResolver(editingCustomer ? updateCustomerSchema : createCustomerSchema),
         defaultValues: {
             customer_number: '',
             category_id: '',
@@ -212,7 +213,7 @@ export default function Index({ auth, api_token, categories = [] }) {
                                         View Details
                                     </Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => console.log('Edit customer:', customer.id)}>
+                                <DropdownMenuItem onClick={() => handleEditCustomer(customer)}>
                                     <Edit className="mr-2 h-4 w-4" />
                                     Edit Customer
                                 </DropdownMenuItem>
@@ -311,6 +312,49 @@ export default function Index({ auth, api_token, categories = [] }) {
         return requiredFields.includes(fieldName);
     };
 
+    const handleCreateCustomer = () => {
+        setEditingCustomer(null);
+        reset({
+            customer_number: '',
+            category_id: '',
+            route_id: '',
+            first_name: '',
+            last_name: '',
+            phone: '',
+            alternative_phone: '',
+            address: '',
+            city: '',
+            area: '',
+            latitude: '',
+            longitude: '',
+            notes: ''
+        });
+        setSelectedCategory(null);
+        setOpen(true);
+    };
+
+    const handleEditCustomer = (customer) => {
+        setEditingCustomer(customer);
+        const category = categories.find(c => c.id === customer.category_id);
+        setSelectedCategory(category);
+        reset({
+            customer_number: customer.customer_number,
+            category_id: customer.category_id?.toString() || '',
+            route_id: customer.activeRoute?.route_id?.toString() || '',
+            first_name: customer.first_name,
+            last_name: customer.last_name,  
+            phone: customer.phone,
+            alternative_phone: customer.alternative_phone || '',
+            address: customer.address,
+            city: customer.city,
+            area: customer.area,
+            latitude: customer.latitude || '',
+            longitude: customer.longitude || '',
+            notes: customer.notes || ''
+        });
+        setOpen(true);
+    };
+
     const onSubmit = async (data) => {
         try {
             // Set the name field from first_name and last_name
@@ -321,12 +365,20 @@ export default function Index({ auth, api_token, categories = [] }) {
                 route_id: parseInt(data.route_id)
             };
             
-            await addCustomer(customerData);
+            if (editingCustomer) {
+                await updateCustomer(editingCustomer.id, customerData);
+                toast.success('Customer updated successfully');
+            } else {
+                await addCustomer(customerData);
+                toast.success('Customer added successfully');
+            }
+            
             setOpen(false);
             reset();
-            toast.success('Customer added successfully');
+            setEditingCustomer(null);
+            setSelectedCategory(null);
         } catch (error) {
-            console.error('Error adding customer:', error);
+            console.error('Error saving customer:', error);
         }
     };
 
@@ -416,11 +468,13 @@ export default function Index({ auth, api_token, categories = [] }) {
                                 </div>
                                 <Dialog open={open} onOpenChange={setOpen}>
                                     <DialogTrigger asChild>
-                                        <Button>Add Customer</Button>
+                                        <Button onClick={handleCreateCustomer}>Add Customer</Button>
                                     </DialogTrigger>
                                     <DialogContent className="sm:max-w-[500px] max-h-[90vh]">
                                         <DialogHeader>
-                                            <DialogTitle>Add New Customer</DialogTitle>
+                                            <DialogTitle>
+                                                {editingCustomer ? 'Edit Customer' : 'Add New Customer'}
+                                            </DialogTitle>
                                         </DialogHeader>
                                         <ScrollArea className="h-[calc(90vh-8rem)]">
                                             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pr-4">
@@ -622,7 +676,7 @@ export default function Index({ auth, api_token, categories = [] }) {
                                                         Cancel
                                                     </Button>
                                                     <Button type="submit" disabled={isSubmitting}>
-                                                        {isSubmitting ? 'Saving...' : 'Save Customer'}
+                                                        {isSubmitting ? 'Saving...' : editingCustomer ? 'Update Customer' : 'Save Customer'}
                                                     </Button>
                                                 </div>
                                             </form>

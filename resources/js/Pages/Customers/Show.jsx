@@ -2,13 +2,36 @@ import React, { useState, useEffect } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { toast, Toaster } from 'sonner';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { updateCustomerSchema } from '@/schemas/customerSchema';
 import { useAuthStore } from '@/stores/authStore';
 import { useCustomerStore } from '@/stores/customerStore';
+import { useRouteStore } from '@/stores/routeStore';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import InputError from '@/Components/InputError';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
     ArrowLeft,
     User,
@@ -25,16 +48,43 @@ import {
     Edit,
 } from "lucide-react";
 
-export default function Show({ auth, api_token, customer: initialCustomer }) {
+export default function Show({ auth, api_token, customer: initialCustomer, categories = [] }) {
     const [customer, setCustomer] = useState(initialCustomer);
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
     
     // Zustand stores
     const { setAuth, token, isAuthenticated } = useAuthStore();
     const { 
         error, 
+        updateCustomer,
         approveCustomerRegistration,
         clearError 
     } = useCustomerStore();
+    const { routes, fetchRoutes: fetchRoutesData } = useRouteStore();
+
+    // Form for editing customer
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        reset,
+        control,
+        formState: { errors, isSubmitting }
+    } = useForm({
+        resolver: zodResolver(updateCustomerSchema),
+        defaultValues: {
+            first_name: customer.first_name || '',
+            last_name: customer.last_name || '',
+            phone: customer.phone || '',
+            alternative_phone: customer.alternative_phone || '',
+            address: customer.address || '',
+            city: customer.city || '',
+            area: customer.area || '',
+            latitude: customer.latitude || '',
+            longitude: customer.longitude || '',
+            status: customer.status || 'active',
+        }
+    });
 
     // Initialize auth store with props
     useEffect(() => {
@@ -43,6 +93,13 @@ export default function Show({ auth, api_token, customer: initialCustomer }) {
         }
     }, [auth.user, api_token, isAuthenticated, setAuth]);
 
+    // Fetch routes when auth is ready
+    useEffect(() => {
+        if (isAuthenticated && token && auth.user?.role === 'admin') {
+            fetchRoutesData();
+        }
+    }, [isAuthenticated, token, fetchRoutesData]);
+
     // Show error toast when error state changes
     useEffect(() => {
         if (error) {
@@ -50,6 +107,34 @@ export default function Show({ auth, api_token, customer: initialCustomer }) {
             clearError();
         }
     }, [error, clearError]);
+
+    const handleEditCustomer = () => {
+        reset({
+            first_name: customer.first_name || '',
+            last_name: customer.last_name || '',
+            phone: customer.phone || '',
+            alternative_phone: customer.alternative_phone || '',
+            address: customer.address || '',
+            city: customer.city || '',
+            area: customer.area || '',
+            latitude: customer.latitude || '',
+            longitude: customer.longitude || '',
+            status: customer.status || 'active',
+        });
+        setEditDialogOpen(true);
+    };
+
+    const onEditSubmit = async (data) => {
+        try {
+            const updatedCustomer = await updateCustomer(customer.id, data);
+            setCustomer(prev => ({ ...prev, ...data }));
+            setEditDialogOpen(false);
+            toast.success('Customer updated successfully');
+        } catch (error) {
+            console.error('Error updating customer:', error);
+            toast.error('Failed to update customer');
+        }
+    };
 
     const handleApproveRegistration = async () => {
         if (window.confirm('Are you sure you want to approve this customer registration?')) {
@@ -177,10 +262,165 @@ export default function Show({ auth, api_token, customer: initialCustomer }) {
                                             Approve Registration
                                         </Button>
                                     )}
-                                    <Button variant="outline" size="sm">
-                                        <Edit className="h-4 w-4 mr-2" />
-                                        Edit Customer
-                                    </Button>
+                                    <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                                        <DialogTrigger asChild>
+                                            <Button variant="outline" size="sm" onClick={handleEditCustomer}>
+                                                <Edit className="h-4 w-4 mr-2" />
+                                                Edit Customer
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="sm:max-w-[500px] max-h-[90vh]">
+                                            <DialogHeader>
+                                                <DialogTitle>Edit Customer</DialogTitle>
+                                            </DialogHeader>
+                                            <ScrollArea className="h-[calc(90vh-8rem)]">
+                                                <form onSubmit={handleSubmit(onEditSubmit)} className="space-y-4 pr-4">
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="first_name">First Name</Label>
+                                                            <Input
+                                                                id="first_name"
+                                                                {...register('first_name')}
+                                                            />
+                                                            {errors.first_name && (
+                                                                <InputError message={errors.first_name.message} />
+                                                            )}
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="last_name">Last Name</Label>
+                                                            <Input
+                                                                id="last_name"
+                                                                {...register('last_name')}
+                                                            />
+                                                            {errors.last_name && (
+                                                                <InputError message={errors.last_name.message} />
+                                                            )}
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="phone">Phone</Label>
+                                                            <Input
+                                                                id="phone"
+                                                                {...register('phone')}
+                                                            />
+                                                            {errors.phone && (
+                                                                <InputError message={errors.phone.message} />
+                                                            )}
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="alternative_phone">Alternative Phone</Label>
+                                                            <Input
+                                                                id="alternative_phone"
+                                                                {...register('alternative_phone')}
+                                                            />
+                                                            {errors.alternative_phone && (
+                                                                <InputError message={errors.alternative_phone.message} />
+                                                            )}
+                                                        </div>
+
+                                                        <div className="space-y-2 sm:col-span-2">
+                                                            <Label htmlFor="address">Address</Label>
+                                                            <Textarea
+                                                                id="address"
+                                                                rows={3}
+                                                                {...register('address')}
+                                                            />
+                                                            {errors.address && (
+                                                                <InputError message={errors.address.message} />
+                                                            )}
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="city">City</Label>
+                                                            <Input
+                                                                id="city"
+                                                                {...register('city')}
+                                                            />
+                                                            {errors.city && (
+                                                                <InputError message={errors.city.message} />
+                                                            )}
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="area">Area/Neighborhood</Label>
+                                                            <Input
+                                                                id="area"
+                                                                {...register('area')}
+                                                            />
+                                                            {errors.area && (
+                                                                <InputError message={errors.area.message} />
+                                                            )}
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="latitude">Latitude</Label>
+                                                            <Input
+                                                                id="latitude"
+                                                                type="number"
+                                                                step="any"
+                                                                {...register('latitude')}
+                                                            />
+                                                            {errors.latitude && (
+                                                                <InputError message={errors.latitude.message} />
+                                                            )}
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="longitude">Longitude</Label>
+                                                            <Input
+                                                                id="longitude"
+                                                                type="number"
+                                                                step="any"
+                                                                {...register('longitude')}
+                                                            />
+                                                            {errors.longitude && (
+                                                                <InputError message={errors.longitude.message} />
+                                                            )}
+                                                        </div>
+
+                                                        <div className="space-y-2 sm:col-span-2">
+                                                            <Label htmlFor="status">Status</Label>
+                                                            <Controller
+                                                                name="status"
+                                                                control={control}
+                                                                render={({ field }) => (
+                                                                    <Select value={field.value} onValueChange={field.onChange}>
+                                                                        <SelectTrigger>
+                                                                            <SelectValue placeholder="Select status" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                            <SelectItem value="active">Active</SelectItem>
+                                                                            <SelectItem value="inactive">Inactive</SelectItem>
+                                                                            <SelectItem value="suspended">Suspended</SelectItem>
+                                                                        </SelectContent>
+                                                                    </Select>
+                                                                )}
+                                                            />
+                                                            {errors.status && (
+                                                                <InputError message={errors.status.message} />
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex justify-end space-x-2 pt-4">
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            onClick={() => setEditDialogOpen(false)}
+                                                            disabled={isSubmitting}
+                                                        >
+                                                            Cancel
+                                                        </Button>
+                                                        <Button type="submit" disabled={isSubmitting}>
+                                                            {isSubmitting ? 'Saving...' : 'Update Customer'}
+                                                        </Button>
+                                                    </div>
+                                                </form>
+                                            </ScrollArea>
+                                        </DialogContent>
+                                    </Dialog>
                                 </div>
                             </div>
                         </CardHeader>

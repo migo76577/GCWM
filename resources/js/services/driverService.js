@@ -21,6 +21,10 @@ class DriverService {
     return await apiService.delete(`/drivers/${id}`);
   }
 
+  async toggleDriverStatus(id, status) {
+    return await apiService.post(`/drivers/${id}/toggle-status`, { status });
+  }
+
   // Additional driver-specific methods
   async getDriversByStatus(status) {
     return await this.getDrivers({ status });

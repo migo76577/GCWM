@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Driver\StoreDriverRequest;
+use App\Http\Requests\Driver\UpdateDriverRequest;
 use App\Models\Driver;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -49,6 +50,54 @@ class DriverController extends Controller
     public function show(Driver $driver)
     {
         return response()->json($driver->load(['user', 'routeAssignments.route', 'collections']));
+    }
+
+    public function update(UpdateDriverRequest $request, Driver $driver)
+    {
+        $driver->update([
+            'employee_number' => $request->employee_number,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'phone' => $request->phone,
+            'license_number' => $request->license_number,
+            'license_expiry' => $request->license_expiry,
+            'hire_date' => $request->hire_date,
+            'address' => $request->address,
+            'status' => $request->status,
+        ]);
+
+        return response()->json($driver->load('user'));
+    }
+
+    public function toggleStatus(Request $request, Driver $driver)
+    {
+        $request->validate([
+            'status' => 'required|in:active,inactive,suspended'
+        ]);
+
+        $driver->update([
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'message' => 'Driver status updated successfully',
+            'driver' => $driver->load('user')
+        ]);
+    }
+
+    public function destroy(Driver $driver)
+    {
+        // Delete the associated user account as well
+        $user = $driver->user;
+        $driver->delete();
+        
+        if ($user) {
+            $user->delete();
+        }
+
+        return response()->json([
+            'message' => 'Driver deleted successfully'
+        ]);
     }
 
     public function todayAssignment(Request $request)

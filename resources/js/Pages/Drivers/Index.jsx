@@ -87,6 +87,7 @@ export default function Index({ auth, api_token }) {
         addDriver, 
         updateDriver,
         deleteDriver,
+        toggleDriverStatus,
         getDriverStats,
         getDriversWithExpiringLicense,
         clearError 
@@ -314,8 +315,7 @@ export default function Index({ auth, api_token }) {
     };
 
     const handleViewDriver = (driver) => {
-        // TODO: Navigate to driver details page
-        console.log('View driver:', driver);
+        window.location.href = `/drivers/${driver.id}`;
     };
 
     const onSubmit = async (data) => {
@@ -336,7 +336,7 @@ export default function Index({ auth, api_token }) {
 
     const handleStatusChange = async (driver, newStatus) => {
         try {
-            await updateDriver(driver.id, { ...driver, status: newStatus });
+            await toggleDriverStatus(driver.id, newStatus);
             const action = newStatus === 'suspended' ? 'suspended' : 'activated';
             toast.success(`Driver ${action} successfully`);
         } catch (error) {

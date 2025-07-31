@@ -187,6 +187,32 @@ export const useDriverStore = create(
         }
       },
 
+      toggleDriverStatus: async (id, status) => {
+        set({ error: null }, false, 'toggleDriverStatus:start');
+        
+        try {
+          const response = await driverService.toggleDriverStatus(id, status);
+          const updatedDriver = response.driver;
+          
+          set((state) => ({
+            drivers: state.drivers.map(driver =>
+              driver.id === id ? { ...driver, status } : driver
+            ),
+            selectedDriver: state.selectedDriver?.id === id 
+              ? { ...state.selectedDriver, status } 
+              : state.selectedDriver,
+            error: null,
+          }), false, 'toggleDriverStatus:success');
+          
+          return updatedDriver;
+        } catch (error) {
+          set({ 
+            error: error.message || 'Failed to update driver status' 
+          }, false, 'toggleDriverStatus:error');
+          throw error;
+        }
+      },
+
       // Computed/Derived state
       getFilteredDrivers: () => {
         const { drivers, filters } = get();

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Driver;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateDriverRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateDriverRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->user()->role === 'admin';
     }
 
     /**
@@ -21,8 +22,22 @@ class UpdateDriverRequest extends FormRequest
      */
     public function rules(): array
     {
+        $driverId = $this->route('driver')->id;
+        
         return [
-            //
+            'employee_number' => [
+                'required',
+                'string',
+                Rule::unique('drivers', 'employee_number')->ignore($driverId)
+            ],
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'license_number' => 'required|string|max:50',
+            'license_expiry' => 'required|date',
+            'hire_date' => 'required|date',
+            'address' => 'nullable|string',
+            'status' => 'required|in:active,inactive,suspended',
         ];
     }
 }

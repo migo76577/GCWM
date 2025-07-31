@@ -69,6 +69,7 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
     // Driver management (Admin only)
     Route::middleware('role:admin')->group(function () {
         Route::apiResource('drivers', DriverController::class);
+        Route::post('drivers/{driver}/toggle-status', [DriverController::class, 'toggleStatus']);
         Route::get('drivers/{driver}/performance', [DriverController::class, 'performance']);
     });
     

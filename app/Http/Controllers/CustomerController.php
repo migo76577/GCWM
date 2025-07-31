@@ -26,9 +26,13 @@ class CustomerController extends Controller
         // Load related data for the customer
         $customer->load(['activePlan.plan', 'activeRoute.route']);
         
+        // Get categories for edit form
+        $categories = CustomerCategory::active()->get();
+        
         // Return Inertia page with customer data
         return Inertia::render('Customers/Show', [
-            'customer' => $customer
+            'customer' => $customer,
+            'categories' => $categories
         ]);
     }
 
