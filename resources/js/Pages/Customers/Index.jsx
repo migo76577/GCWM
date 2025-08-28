@@ -455,16 +455,18 @@ export default function Index({ auth, api_token, categories = [] }) {
         >
             <Head title="Customers" />
             
-            <div className="py-2 sm:py-8">
-                <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+            <div className="p-4 sm:p-6 space-y-6 pt-6 sm:pt-8">
+                <div className="max-w-7xl mx-auto">
+                    {/* Header */}
+                    <div className="mb-8 pr-20 sm:pr-24 md:pr-0">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Customers</h1>
+                        <p className="text-gray-600 mt-2">Manage customer registrations and information</p>
+                    </div>
+
                     <Card className="w-full overflow-hidden min-w-0">
                         <CardHeader className="pb-4">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                 <div className="min-w-0">
-                                    <CardTitle className="text-xl sm:text-2xl font-bold truncate">Customer Management</CardTitle>
-                                    <CardDescription className="text-sm sm:text-base">
-                                        Manage customer registrations and information
-                                    </CardDescription>
                                 </div>
                                 <Dialog open={open} onOpenChange={setOpen}>
                                     <DialogTrigger asChild>

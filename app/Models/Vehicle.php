@@ -34,6 +34,16 @@ class Vehicle extends Model
         return $this->hasMany(Expense::class);
     }
 
+    public function maintenances()
+    {
+        return $this->hasMany(VehicleMaintenance::class);
+    }
+
+    public function activeMaintenance()
+    {
+        return $this->hasOne(VehicleMaintenance::class)->active()->latest();
+    }
+
     // Scopes
     public function scopeActive($query)
     {
@@ -43,5 +53,30 @@ class Vehicle extends Model
     public function scopeAvailable($query)
     {
         return $query->where('status', 'active');
+    }
+
+    public function scopeNotOnMaintenance($query)
+    {
+        return $query->where('status', '!=', 'maintenance');
+    }
+
+    // Helper methods
+    public function isOnMaintenance()
+    {
+        return $this->status === 'maintenance';
+    }
+
+    public function hasActiveMaintenance()
+    {
+        return $this->maintenances()->active()->exists();
+    }
+
+    public function updateMaintenanceStatus()
+    {
+        if ($this->maintenances()->ongoing()->exists()) {
+            $this->update(['status' => 'maintenance']);
+        } elseif ($this->status === 'maintenance') {
+            $this->update(['status' => 'active']);
+        }
     }
 }

@@ -154,29 +154,29 @@ export default function Show({ auth, api_token, driver: initialDriver }) {
         >
             <Head title={`Driver - ${driver.first_name} ${driver.last_name}`} />
             
-            <div className="py-4 sm:py-8">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <div className="py-3 sm:py-4 md:py-6 lg:py-8">
+                <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 space-y-4 sm:space-y-6">
                     
                     {/* Driver Header */}
                     <Card>
-                        <CardHeader>
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                                <div className="flex items-center gap-4">
-                                    <div className="h-16 w-16 rounded-full bg-gray-100 flex items-center justify-center">
-                                        <User className="h-8 w-8 text-gray-600" />
+                        <CardHeader className="pb-4 sm:pb-6">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                                    <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                                        <User className="h-6 w-6 sm:h-8 sm:w-8 text-gray-600" />
                                     </div>
-                                    <div>
-                                        <CardTitle className="text-2xl">
+                                    <div className="min-w-0 flex-1">
+                                        <CardTitle className="text-lg sm:text-xl md:text-2xl truncate">
                                             {driver.first_name} {driver.last_name}
                                         </CardTitle>
-                                        <CardDescription className="flex items-center gap-2 mt-1">
+                                        <CardDescription className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-1 text-xs sm:text-sm">
                                             <span className="font-mono">{driver.employee_number}</span>
-                                            <Separator orientation="vertical" className="h-4" />
-                                            <span>{driver.user?.email}</span>
+                                            <Separator orientation="vertical" className="hidden sm:block h-4" />
+                                            <span className="truncate">{driver.user?.email}</span>
                                         </CardDescription>
                                     </div>
                                 </div>
-                                <div className="flex flex-col sm:flex-row gap-2">
+                                <div className="flex flex-wrap gap-2 sm:flex-col lg:flex-row">
                                     <Badge className={`capitalize ${getStatusColor(driver.status)}`}>
                                         {getStatusIcon(driver.status)}
                                         <span className="ml-1">
@@ -228,121 +228,198 @@ export default function Show({ auth, api_token, driver: initialDriver }) {
 
                     {/* Driver Details Tabs */}
                     <Tabs defaultValue="details" className="w-full">
-                        <TabsList className="grid w-full grid-cols-5">
-                            <TabsTrigger value="details">Details</TabsTrigger>
-                            <TabsTrigger value="routes">Routes</TabsTrigger>
-                            <TabsTrigger value="performance">Performance</TabsTrigger>
-                            <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
-                            <TabsTrigger value="activity">Activity</TabsTrigger>
+                        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5 h-auto">
+                            <TabsTrigger value="details" className="text-xs sm:text-sm py-2">Details</TabsTrigger>
+                            <TabsTrigger value="routes" className="text-xs sm:text-sm py-2">Routes</TabsTrigger>
+                            <TabsTrigger value="performance" className="text-xs sm:text-sm py-2">Performance</TabsTrigger>
+                            <TabsTrigger value="maintenance" className="text-xs sm:text-sm py-2">Maintenance</TabsTrigger>
+                            <TabsTrigger value="activity" className="text-xs sm:text-sm py-2 col-span-2 sm:col-span-1">Activity</TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="details" className="space-y-6">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {/* Contact Information */}
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <Phone className="h-5 w-5" />
-                                            Contact Information
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <Mail className="h-4 w-4 text-gray-500" />
+                            {/* Single Card with 2-Column Layout */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <User className="h-5 w-5" />
+                                        Driver Details
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-4 sm:p-6">
+                                    <div className="space-y-6 sm:space-y-8">
+                                        {/* First Row: Contact Information & License Information */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+                                            {/* Contact Information */}
                                             <div>
-                                                <p className="text-sm font-medium">Email</p>
-                                                <p className="text-sm text-gray-600">{driver.user?.email}</p>
+                                                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                                    <Phone className="h-5 w-5" />
+                                                    Contact Information
+                                                </h3>
+                                                <div className="space-y-3">
+                                                    <div className="flex items-start gap-3">
+                                                        <Mail className="h-4 w-4 text-gray-500 mt-0.5" />
+                                                        <div>
+                                                            <p className="text-sm font-medium text-gray-900">Email</p>
+                                                            <p className="text-sm text-gray-600">{driver.user?.email}</p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-start gap-3">
+                                                        <Phone className="h-4 w-4 text-gray-500 mt-0.5" />
+                                                        <div>
+                                                            <p className="text-sm font-medium text-gray-900">Phone Number</p>
+                                                            <p className="text-sm text-gray-600">{driver.phone}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-start gap-3">
+                                                        <MapPin className="h-4 w-4 text-gray-500 mt-0.5" />
+                                                        <div>
+                                                            <p className="text-sm font-medium text-gray-900">Address</p>
+                                                            <p className="text-sm text-gray-600">{driver.address || 'Not provided'}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <Phone className="h-4 w-4 text-gray-500" />
+
+                                            {/* License Information */}
                                             <div>
-                                                <p className="text-sm font-medium">Phone Number</p>
-                                                <p className="text-sm text-gray-600">{driver.phone}</p>
+                                                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                                    <IdCard className="h-5 w-5" />
+                                                    License Information
+                                                </h3>
+                                                <div className="space-y-3">
+                                                    <div className="flex items-start gap-3">
+                                                        <FileText className="h-4 w-4 text-gray-500 mt-0.5" />
+                                                        <div>
+                                                            <p className="text-sm font-medium text-gray-900">License Number</p>
+                                                            <p className="text-sm text-gray-600 font-mono">{driver.license_number}</p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-start gap-3">
+                                                        <CalendarIcon className="h-4 w-4 text-gray-500 mt-0.5" />
+                                                        <div>
+                                                            <p className="text-sm font-medium text-gray-900">License Expiry</p>
+                                                            <div className="flex items-center gap-2">
+                                                                <p className="text-sm text-gray-600">
+                                                                    {new Date(driver.license_expiry).toLocaleDateString()}
+                                                                </p>
+                                                                {isLicenseExpired() && (
+                                                                    <Badge variant="destructive">Expired</Badge>
+                                                                )}
+                                                                {!isLicenseExpired() && isLicenseExpiringSoon() && (
+                                                                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                                                                        Expiring Soon
+                                                                    </Badge>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </CardContent>
-                                </Card>
 
-                                {/* Address Information */}
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <MapPin className="h-5 w-5" />
-                                            Address Information
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                        <div>
-                                            <p className="text-sm font-medium">Address</p>
-                                            <p className="text-sm text-gray-600">{driver.address || 'Not provided'}</p>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                        {/* Second Row: Employment Information & Performance Summary */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+                                            {/* Employment Information */}
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                                    <Briefcase className="h-5 w-5" />
+                                                    Employment Information
+                                                </h3>
+                                                <div className="space-y-3">
+                                                    <div className="flex items-start gap-3">
+                                                        <IdCard className="h-4 w-4 text-gray-500 mt-0.5" />
+                                                        <div>
+                                                            <p className="text-sm font-medium text-gray-900">Employee Number</p>
+                                                            <p className="text-sm text-gray-600 font-mono">{driver.employee_number}</p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-start gap-3">
+                                                        <Calendar className="h-4 w-4 text-gray-500 mt-0.5" />
+                                                        <div>
+                                                            <p className="text-sm font-medium text-gray-900">Hire Date</p>
+                                                            <p className="text-sm text-gray-600">
+                                                                {new Date(driver.hire_date).toLocaleDateString()}
+                                                            </p>
+                                                        </div>
+                                                    </div>
 
-                                {/* Employment Information */}
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <Briefcase className="h-5 w-5" />
-                                            Employment Information
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                        <div>
-                                            <p className="text-sm font-medium">Employee Number</p>
-                                            <p className="text-sm text-gray-600 font-mono">{driver.employee_number}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium">Hire Date</p>
-                                            <p className="text-sm text-gray-600">
-                                                {new Date(driver.hire_date).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium">Status</p>
-                                            <Badge className={`capitalize ${getStatusColor(driver.status)}`}>
-                                                {getStatusIcon(driver.status)}
-                                                <span className="ml-1">
-                                                    {driver.status?.replace('_', ' ')}
-                                                </span>
-                                            </Badge>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                                    <div className="flex items-start gap-3">
+                                                        <CheckCircle className="h-4 w-4 text-gray-500 mt-0.5" />
+                                                        <div>
+                                                            <p className="text-sm font-medium text-gray-900">Employment Status</p>
+                                                            <Badge className={`capitalize ${getStatusColor(driver.status)}`}>
+                                                                {getStatusIcon(driver.status)}
+                                                                <span className="ml-1">
+                                                                    {driver.status?.replace('_', ' ')}
+                                                                </span>
+                                                            </Badge>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
 
-                                {/* License Information */}
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <IdCard className="h-5 w-5" />
-                                            License Information
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                        <div>
-                                            <p className="text-sm font-medium">License Number</p>
-                                            <p className="text-sm text-gray-600 font-mono">{driver.license_number}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium">License Expiry</p>
-                                            <div className="flex items-center gap-2">
-                                                <p className="text-sm text-gray-600">
-                                                    {new Date(driver.license_expiry).toLocaleDateString()}
-                                                </p>
-                                                {isLicenseExpired() && (
-                                                    <Badge variant="destructive">Expired</Badge>
-                                                )}
-                                                {!isLicenseExpired() && isLicenseExpiringSoon() && (
-                                                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                                                        Expiring Soon
-                                                    </Badge>
-                                                )}
+                                            {/* Performance Summary */}
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                                    <CheckCircle className="h-5 w-5" />
+                                                    Performance Summary
+                                                </h3>
+                                                <div className="space-y-3">
+                                                    <div className="flex items-start gap-3">
+                                                        <Truck className="h-4 w-4 text-gray-500 mt-0.5" />
+                                                        <div>
+                                                            <p className="text-sm font-medium text-gray-900">Routes Completed</p>
+                                                            <p className="text-sm text-gray-600">45 routes this month</p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-start gap-3">
+                                                        <Clock className="h-4 w-4 text-gray-500 mt-0.5" />
+                                                        <div>
+                                                            <p className="text-sm font-medium text-gray-900">On-Time Performance</p>
+                                                            <p className="text-sm text-gray-600">94% on-time completion</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-start gap-3">
+                                                        <AlertCircle className="h-4 w-4 text-gray-500 mt-0.5" />
+                                                        <div>
+                                                            <p className="text-sm font-medium text-gray-900">Safety Record</p>
+                                                            <p className="text-sm text-gray-600">No incidents reported</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </CardContent>
-                                </Card>
-                            </div>
+
+                                        {/* Third Row: Recent Activity (spans full width) */}
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                                <Calendar className="h-5 w-5" />
+                                                Recent Activity
+                                            </h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                <div className="bg-gray-50 p-3 rounded-lg">
+                                                    <p className="text-sm font-medium">Route RTLKN completed</p>
+                                                    <p className="text-xs text-gray-500">2 hours ago</p>
+                                                </div>
+                                                <div className="bg-gray-50 p-3 rounded-lg">
+                                                    <p className="text-sm font-medium">Started morning shift</p>
+                                                    <p className="text-xs text-gray-500">6 hours ago</p>
+                                                </div>
+                                                <div className="bg-gray-50 p-3 rounded-lg">
+                                                    <p className="text-sm font-medium">Vehicle inspection passed</p>
+                                                    <p className="text-xs text-gray-500">Yesterday</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
                         </TabsContent>
 
                         <TabsContent value="routes">

@@ -10,9 +10,19 @@ use Illuminate\Http\Request;
 
 class VehicleController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Vehicle::all();
+        $query = Vehicle::query();
+
+        if ($request->has('available_only')) {
+            $query->notOnMaintenance();
+        }
+
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        return $query->get();
     }
 
     public function store(StoreVehicleRequest $request)

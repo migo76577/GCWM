@@ -221,8 +221,24 @@ export default function Show({ auth, api_token, customer: initialCustomer, categ
         >
             <Head title={`Customer - ${customer.first_name} ${customer.last_name}`} />
             
-            <div className="py-4 sm:py-8">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <div className="p-4 sm:p-6 space-y-6 pt-6 sm:pt-8">
+                <div className="max-w-7xl mx-auto">
+                    {/* Header */}
+                    <div className="mb-8 pr-20 sm:pr-24 md:pr-0">
+                        <div className="flex items-center gap-4">
+                            <Link
+                                href="/customers"
+                                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+                            >
+                                <ArrowLeft className="h-4 w-4" />
+                                Back to Customers
+                            </Link>
+                        </div>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mt-4">Customer Details</h1>
+                        <p className="text-gray-600 mt-2">View and manage customer information</p>
+                    </div>
+                    
+                    <div className="space-y-6">
                     
                     {/* Customer Header */}
                     <Card>
@@ -620,6 +636,7 @@ export default function Show({ auth, api_token, customer: initialCustomer, categ
                             </Card>
                         </TabsContent>
                     </Tabs>
+                    </div>
                 </div>
             </div>
             <Toaster position="top-right" expand={true} richColors />

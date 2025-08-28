@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\ReportsController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\SettingsController;
+use App\Http\Controllers\Api\MaintenanceController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -64,6 +65,11 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
     // Vehicle management (Admin only)
     Route::middleware('role:admin')->group(function () {
         Route::apiResource('vehicles', VehicleController::class);
+        
+        // Maintenance routes
+        Route::apiResource('maintenances', MaintenanceController::class);
+        Route::post('maintenances/{maintenance}/mark-in-progress', [MaintenanceController::class, 'markInProgress']);
+        Route::post('maintenances/{maintenance}/mark-completed', [MaintenanceController::class, 'markCompleted']);
     });
     
     // Driver management (Admin only)

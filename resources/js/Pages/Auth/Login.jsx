@@ -30,11 +30,11 @@ export default function Login({ status, canResetPassword }) {
 
             <div className="space-y-6">
                 <div className="text-center">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                    <h2 className="text-3xl font-bold text-green-800 mb-2">
                         Welcome back
                     </h2>
                     <p className="text-gray-600">
-                        Please sign in to your account
+                        Please sign in to your GCWM account
                     </p>
                 </div>
 
@@ -42,7 +42,7 @@ export default function Login({ status, canResetPassword }) {
                     <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                         <div className="flex items-center">
                             <div className="flex-shrink-0">
-                                <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                 </svg>
                             </div>
@@ -69,7 +69,7 @@ export default function Login({ status, canResetPassword }) {
                                 type="email"
                                 name="email"
                                 value={data.email}
-                                className="mt-1 block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                                className="mt-1 block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
                                 placeholder="Enter your email"
                                 autoComplete="username"
                                 isFocused={true}
@@ -92,7 +92,7 @@ export default function Login({ status, canResetPassword }) {
                                 type={showPassword ? "text" : "password"}
                                 name="password"
                                 value={data.password}
-                                className="mt-1 block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                                className="mt-1 block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
                                 placeholder="Enter your password"
                                 autoComplete="current-password"
                                 onChange={(e) => setData('password', e.target.value)}
@@ -125,7 +125,7 @@ export default function Login({ status, canResetPassword }) {
                                 onChange={(e) =>
                                     setData('remember', e.target.checked)
                                 }
-                                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                             />
                             <label htmlFor="remember" className="ml-2 block text-sm text-gray-700">
                                 Remember me
@@ -136,7 +136,7 @@ export default function Login({ status, canResetPassword }) {
                             <div className="text-sm">
                                 <Link
                                     href={route('password.request')}
-                                    className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200"
+                                    className="font-medium text-green-600 hover:text-green-500 transition-colors duration-200"
                                 >
                                     Forgot your password?
                                 </Link>
@@ -146,7 +146,7 @@ export default function Login({ status, canResetPassword }) {
 
                     <div>
                         <PrimaryButton 
-                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]" 
+                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]" 
                             disabled={processing}
                         >
                             {processing ? (

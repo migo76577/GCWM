@@ -314,8 +314,13 @@ export default function Index({ auth, categories }) {
         >
             <Head title="Customer Categories" />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div className="p-4 sm:p-6 space-y-6 pt-6 sm:pt-8">
+                <div className="max-w-7xl mx-auto">
+                    {/* Header */}
+                    <div className="mb-8 pr-20 sm:pr-24 md:pr-0">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Customer Categories</h1>
+                        <p className="text-gray-600 mt-2">Manage customer types and their billing configurations</p>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {categories.map((category) => (
                             <Card key={category.id} className="relative">
@@ -464,6 +469,7 @@ export default function Index({ auth, categories }) {
                             </CardContent>
                         </Card>
                     )}
+                    </div>
                 </div>
             </div>
         </AuthenticatedLayout>

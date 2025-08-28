@@ -392,8 +392,15 @@ export default function Index({ auth, api_token }) {
         >
             <Head title="Drivers" />
             
-            <div className="py-2 sm:py-6">
-                <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 space-y-4">
+            <div className="p-4 sm:p-6 space-y-6 pt-6 sm:pt-8">
+                <div className="max-w-7xl mx-auto">
+                    {/* Header */}
+                    <div className="mb-8 pr-20 sm:pr-24 md:pr-0">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Drivers</h1>
+                        <p className="text-gray-600 mt-2">Manage drivers and their assignments</p>
+                    </div>
+
+                    <div className="space-y-6">
                     {/* Stats Cards */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
                         <Card>
@@ -479,10 +486,6 @@ export default function Index({ auth, api_token }) {
                         <CardHeader className="pb-3">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                 <div className="min-w-0">
-                                    <CardTitle className="text-lg sm:text-xl font-bold truncate">Driver Management</CardTitle>
-                                    <CardDescription className="text-sm">
-                                        Manage drivers and their assignments
-                                    </CardDescription>
                                 </div>
                                 <Dialog open={open} onOpenChange={setOpen}>
                                     <DialogTrigger asChild>
@@ -758,6 +761,7 @@ export default function Index({ auth, api_token }) {
                             </div>
                         </CardContent>
                     </Card>
+                    </div>
                 </div>
             </div>
 

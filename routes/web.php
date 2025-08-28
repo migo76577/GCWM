@@ -68,6 +68,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/drivers', function () {
         return Inertia::render('Drivers/Index');
     })->name('drivers.index');
+    
+    // Maintenance management
+    Route::get('/maintenance', function () {
+        return Inertia::render('Maintenance/Index');
+    })->name('maintenance.index');
     Route::get('/drivers/{driver}', function ($driverId) {
         // You'll need to create a DriverController method for this
         // For now, returning mock data structure
