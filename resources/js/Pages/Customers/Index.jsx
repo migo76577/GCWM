@@ -36,6 +36,16 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { MoreHorizontal, CheckCircle, Trash2, Eye, Edit, UserX, UserCheck } from "lucide-react";
 
 // Helper function to convert text to proper case
@@ -48,6 +58,10 @@ export default function Index({ auth, api_token, categories = [] }) {
     const [open, setOpen] = useState(false);
     const [editingCustomer, setEditingCustomer] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
+    const [customerToDelete, setCustomerToDelete] = useState(null);
+    const [customerToDeactivate, setCustomerToDeactivate] = useState(null);
 
     // Zustand stores
     const { setAuth, token, isAuthenticated, user: authUser } = useAuthStore();
@@ -230,7 +244,7 @@ export default function Index({ auth, api_token, categories = [] }) {
                                     <>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem 
-                                            onClick={() => handleDeactivate(customer.id)}
+                                            onClick={() => handleDeactivate(customer)}
                                             className="text-orange-600 focus:text-orange-600"
                                         >
                                             <UserX className="mr-2 h-4 w-4" />
@@ -252,7 +266,7 @@ export default function Index({ auth, api_token, categories = [] }) {
                                 )}
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem 
-                                    onClick={() => handleDelete(customer.id)}
+                                    onClick={() => handleDelete(customer)}
                                     className="text-red-600 focus:text-red-600"
                                 >
                                     <Trash2 className="mr-2 h-4 w-4" />
@@ -382,14 +396,21 @@ export default function Index({ auth, api_token, categories = [] }) {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this customer?')) {
-            try {
-                await deleteCustomer(id);
-                toast.success('Customer deleted successfully');
-            } catch (error) {
-                console.error('Error deleting customer:', error);
-            }
+    const handleDelete = (customer) => {
+        setCustomerToDelete(customer);
+        setDeleteDialogOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!customerToDelete) return;
+        
+        try {
+            await deleteCustomer(customerToDelete.id);
+            toast.success('Customer deleted successfully');
+            setDeleteDialogOpen(false);
+            setCustomerToDelete(null);
+        } catch (error) {
+            console.error('Error deleting customer:', error);
         }
     };
 
@@ -402,14 +423,21 @@ export default function Index({ auth, api_token, categories = [] }) {
         }
     };
 
-    const handleDeactivate = async (id) => {
-        if (window.confirm('Are you sure you want to deactivate this customer?')) {
-            try {
-                await updateCustomer(id, { status: 'inactive' });
-                toast.success('Customer deactivated successfully');
-            } catch (error) {
-                console.error('Error deactivating customer:', error);
-            }
+    const handleDeactivate = (customer) => {
+        setCustomerToDeactivate(customer);
+        setDeactivateDialogOpen(true);
+    };
+
+    const confirmDeactivate = async () => {
+        if (!customerToDeactivate) return;
+        
+        try {
+            await updateCustomer(customerToDeactivate.id, { status: 'inactive' });
+            toast.success('Customer deactivated successfully');
+            setDeactivateDialogOpen(false);
+            setCustomerToDeactivate(null);
+        } catch (error) {
+            console.error('Error deactivating customer:', error);
         }
     };
 
@@ -430,18 +458,16 @@ export default function Index({ auth, api_token, categories = [] }) {
                 header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Customers</h2>}
             >
                 <Head title="Customers" />
-                <div className="py-4 sm:py-8">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <Card className="w-full">
-                            <CardContent className="p-4 sm:p-6">
-                                <div className="text-center">
-                                    <h3 className="text-lg font-medium text-red-600">Access Denied</h3>
-                                    <p className="mt-2 text-sm text-gray-600">
-                                        You need admin privileges to access customer management.
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
+                <div className="p-4 sm:p-6 space-y-6 pt-6 sm:pt-8">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-6">
+                            <div className="text-center">
+                                <h3 className="text-lg font-medium text-red-600">Access Denied</h3>
+                                <p className="mt-2 text-sm text-gray-600">
+                                    You need admin privileges to access customer management.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </AuthenticatedLayout>
@@ -463,12 +489,10 @@ export default function Index({ auth, api_token, categories = [] }) {
                         <p className="text-gray-600 mt-2">Manage customer registrations and information</p>
                     </div>
 
-                    <Card className="w-full overflow-hidden min-w-0">
-                        <CardHeader className="pb-4">
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                                <div className="min-w-0">
-                                </div>
-                                <Dialog open={open} onOpenChange={setOpen}>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                        <div className="min-w-0">
+                        </div>
+                        <Dialog open={open} onOpenChange={setOpen}>
                                     <DialogTrigger asChild>
                                         <Button onClick={handleCreateCustomer}>Add Customer</Button>
                                     </DialogTrigger>
@@ -685,21 +709,63 @@ export default function Index({ auth, api_token, categories = [] }) {
                                         </ScrollArea>
                                     </DialogContent>
                                 </Dialog>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-2 sm:p-6 overflow-x-auto">
-                            <div className="min-w-full">
-                                <DataTable 
-                                    columns={columns} 
-                                    data={customers} 
-                                    isLoading={isLoading}
-                                    pageSize={10}
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
+                    </div>
+
+                    <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                        <DataTable 
+                            columns={columns} 
+                            data={customers} 
+                            isLoading={isLoading}
+                            pageSize={10}
+                        />
+                    </div>
                 </div>
             </div>
+
+            {/* Delete Confirmation Dialog */}
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Customer</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to delete <strong>{customerToDelete?.first_name} {customerToDelete?.last_name}</strong>? 
+                            This action cannot be undone and will permanently remove the customer and all associated data.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction 
+                            onClick={confirmDelete}
+                            className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                        >
+                            Delete Customer
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Deactivate Confirmation Dialog */}
+            <AlertDialog open={deactivateDialogOpen} onOpenChange={setDeactivateDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Deactivate Customer</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to deactivate <strong>{customerToDeactivate?.first_name} {customerToDeactivate?.last_name}</strong>? 
+                            They will no longer be able to use the service until reactivated.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction 
+                            onClick={confirmDeactivate}
+                            className="bg-orange-600 hover:bg-orange-700 focus:ring-orange-600"
+                        >
+                            Deactivate Customer
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
             <Toaster position="top-right" expand={true} richColors />
         </AuthenticatedLayout>
     );

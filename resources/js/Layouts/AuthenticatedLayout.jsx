@@ -217,7 +217,7 @@ export default function AuthenticatedLayout({ header, children }) {
                         <div className="py-2">
                             {navigationSections.map((section, sectionIndex) => (
                                 <div key={sectionIndex} className="mb-6 sm:mb-8">
-                                    <h3 className="text-xs font-semibold text-green-300 uppercase tracking-wider mb-2 sm:mb-3 px-2 sticky top-0 bg-gradient-to-b from-green-800 to-green-900 py-1">
+                                    <h3 className="text-xs font-semibold text-green-300 uppercase tracking-wider mb-2 sm:mb-3 px-2 sticky top-0  py-1">
                                         {section.label}
                                     </h3>
                                     <nav className="space-y-1">

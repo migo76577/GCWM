@@ -471,7 +471,6 @@ export default function Index({ auth, categories }) {
                     )}
                     </div>
                 </div>
-            </div>
         </AuthenticatedLayout>
     );
 }
